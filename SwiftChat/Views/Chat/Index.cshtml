@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Chat";
+}
+
+<h2>Let's Chat!</h2>
+
+<div id="messageArea">
+    <!-- Messages will be displayed here -->
+</div>
+
+<input type="text" id="userInput" placeholder="Your name" />
+<input type="text" id="messageInput" placeholder="Your message" />
+<button id="sendButton">Send</button>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+    <script>
+        // Create a connection to the SignalR hub
+        let connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+        // Disable the send button until the connection is established. Testing
+        document.getElementById("sendButton").disabled = true;
+
+        // Handling incoming messages function
+        connection.on("ReceiveMessage", function (user, message) {
+            let msg = document.createElement("div");
+            msg.textContent = `${user}: ${message}`;
+            document.getElementById("messageArea").appendChild(msg);
+        });
+
+        // Start SignalR connection
+        connection.start().then(function () {
+            document.getElementById("sendButton").disabled = false;
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        // click event listener to the send button
+        document.getElementById("sendButton").addEventListener("click", function (event) {
+            let user = document.getElementById("userInput").value;
+            let message = document.getElementById("messageInput").value;
+            // Send message to server
+            connection.invoke("SendMessage", user, message).catch(function (err) {
+                return console.error(err.toString());
+            });
+            event.preventDefault();
+        });
+    </script>
+}

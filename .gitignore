@@ -1,0 +1,71 @@
+# Compiled source #
+###################
+bin/
+obj/
+**/[Oo]ut/
+
+# .NET Core #
+############
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding #
+#######################
+ScaffoldingReadMe.txt
+
+# MSTest test Results #
+#######################
+[TestR]esult*/
+[Bb]uild[Ll]og.*
+
+# NPM #
+######
+node_modules/
+
+# Visual Studio cache/options directory #
+##########################################
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# User-specific files #
+#######################
+*.rsuser
+*.userosscache
+
+# Misc #
+########
+*.swp
+*~
+._*
+
+# Logs and databases #
+######################
+*.log
+*.ldf
+*.mdf
+
+# OS generated files #
+######################
+.DS_Store
+Thumbs.db
+
+# Temporary files #
+###################
+*.tmp
+*.temp
+*.tlog
+
+# Others #
+##########
+*.cache
+*.trx
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.pidb
+*.svclog
+*.scc
