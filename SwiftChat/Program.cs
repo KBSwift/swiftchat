@@ -19,12 +19,12 @@ builder.Services.AddControllersWithViews();
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     new MySqlServerVersion(new Version(8, 0, 31))));*/
 
-// Latest Implementation using ENV VARIABLES
-var connectionString = Environment.GetEnvironmentVariable("SWIFTCHAT_CONNECTION_STRING") ??
-    builder.Configuration.GetConnectionString("DefaultConnection"); // will break unless proper MySQL connection string is added to appsettings.json
+// Latest Implementation using ENV VARIABLES. Now updated for MS SQL Server instead of MySQL
+var connectionString = Environment.GetEnvironmentVariable("SWIFTCHAT_CONNECTION_STRING") ?? // will attempt using ENV VAR first
+    builder.Configuration.GetConnectionString("DefaultConnection"); // will break unless proper MS SQL Server connection string is added to appsettings.json
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseSqlServer(connectionString));
 
 // Add ASP.NET Core Identity using the default IdentityUser
 // Original Core Application implementation
