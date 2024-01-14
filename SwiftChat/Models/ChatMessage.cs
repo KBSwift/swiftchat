@@ -5,14 +5,11 @@ namespace SwiftChat.Models
     public class ChatMessage
     {
         public int Id { get; set; }
-        public string Username { get; set; } = string.Empty; // avoiding null values
-        public string Message { get; set; } = string.Empty;
+        public string? SenderId { get; set; } // Foreign key linking to ApplicationUser
+        public string Message { get; set; } = string.Empty; // Avoiding null values
         public DateTime Timestamp { get; set; }
 
-        // will tie user chat history in next db migration
-        /*public string ApplicationUserId { get; set; }
-        public virtual ApplicationUser ApplicationUser { get; set; }*/
-
-
+        // Navigation to ApplicationUser for easy referencing later!
+        public virtual ApplicationUser? Sender { get; set; } // Avoided null with null reference check. virtual for lazy loading. Might help
     }
 }
