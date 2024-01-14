@@ -28,18 +28,10 @@ namespace SwiftChat.Areas.Identity.Pages.Account
             await _signInManager.SignOutAsync();
 			TempData["SuccessMessage"] = "You have successfully logged out. See you next time!"; // Set success message
 			_logger.LogInformation("User logged out.");
-            TempData.Remove("SuccessMessage");
+            /*TempData.Remove("SuccessMessage");*/
 
-            if (returnUrl != null)
-            {
-                return LocalRedirect(returnUrl);
-            }
-            else
-            {
-                // This needs to be a redirect so that the browser performs a new
-                // request and the identity for the user gets updated.
-                return RedirectToPage();
-            }
-        }
+			// Redirect to standard index with HomeController
+			return RedirectToAction("Index", "Home");
+		}
     }
 }
