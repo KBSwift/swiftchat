@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using SwiftChat.Controllers;
 
 namespace SwiftChat.Areas.Identity.Pages.Account
 {
@@ -132,7 +133,7 @@ namespace SwiftChat.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
                     TempData["SuccessMessage"] = "You have successfully logged in."; // temp data for success message
-                    return LocalRedirect(returnUrl);
+                    return RedirectToAction("UserHome", "Home"); // redirect to user home vs regular home
                 }
                 if (result.RequiresTwoFactor)
                 {

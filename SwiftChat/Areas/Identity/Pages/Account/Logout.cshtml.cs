@@ -26,10 +26,11 @@ namespace SwiftChat.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
-			TempData["SuccessMessage"] = "You have successfully logged out."; // Set success message
+			TempData["SuccessMessage"] = "You have successfully logged out. See you next time!"; // Set success message
 			_logger.LogInformation("User logged out.");
-			
-			if (returnUrl != null)
+            TempData.Remove("SuccessMessage");
+
+            if (returnUrl != null)
             {
                 return LocalRedirect(returnUrl);
             }

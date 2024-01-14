@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "User Home";
+}
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div id="tempDataMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+@if (ViewBag.Username != null)
+{
+    <h2>Welcome, @ViewBag.Username!</h2>
+    <p>This is your personalized user home page.</p>
+    <!-- Add more user-specific content here -->
+}
+else
+{
+    <p>Welcome to your user home page.</p>
+}
+
+<!-- Additional content for the user home page can go here -->

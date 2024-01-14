@@ -7,7 +7,7 @@ namespace SwiftChat.Controllers
         // GET: Chat/Index. Testing
         public IActionResult Index()
         {
-            // returns the chat view
+
             return View();
         }
 
