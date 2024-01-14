@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SwiftChat.Data;
 using SwiftChat.Hubs; // Access ChatHub from SwiftChat.Hubs namespace
+using SwiftChat.Models; // Need this since extending Identity
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +33,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();*/
 
 // Modifying to relax password requirements for ease
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     // Password settings
     options.Password.RequireDigit = false; // No digit required

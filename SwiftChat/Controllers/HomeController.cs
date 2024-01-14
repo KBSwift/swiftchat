@@ -9,10 +9,10 @@ namespace SwiftChat.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly UserManager<IdentityUser> _userManager; // Add UserManager for user-specific logic
+        private readonly UserManager<ApplicationUser> _userManager; // Add UserManager for user-specific logic
 
         // Inject UserManager into the constructor
-        public HomeController(ILogger<HomeController> logger, UserManager<IdentityUser> userManager)
+        public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _userManager = userManager; // Initialize UserManager
