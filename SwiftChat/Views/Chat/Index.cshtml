@@ -8,7 +8,6 @@
     <!-- Messages will be displayed here -->
 </div>
 
-<input type="text" id="userInput" placeholder="Your name" />
 <input type="text" id="messageInput" placeholder="Your message" />
 <button id="sendButton">Send</button>
 
@@ -18,16 +17,6 @@
         // Create a connection to the SignalR hub
         let connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
-        // Disable the send button until the connection is established. Testing
-        document.getElementById("sendButton").disabled = true;
-
-        // Handling incoming messages function
-        connection.on("ReceiveMessage", function (user, message) {
-            let msg = document.createElement("div");
-            msg.textContent = `${user}: ${message}`;
-            document.getElementById("messageArea").appendChild(msg);
-        });
-
         // Start SignalR connection
         connection.start().then(function () {
             document.getElementById("sendButton").disabled = false;
@@ -35,15 +24,25 @@
             return console.error(err.toString());
         });
 
-        // click event listener to the send button
+        // Disable the send button until the connection is established.
+        document.getElementById("sendButton").disabled = true;
+
+        // Handling incoming messages
+        connection.on("ReceiveMessage", function (username, message) {
+            let msg = document.createElement("div");
+            msg.textContent = `${username}: ${message}`;
+            document.getElementById("messageArea").appendChild(msg);
+        });
+
+        // Send button actions
         document.getElementById("sendButton").addEventListener("click", function (event) {
-            let user = document.getElementById("userInput").value;
             let message = document.getElementById("messageInput").value;
             // Send message to server
-            connection.invoke("SendMessage", user, message).catch(function (err) {
+            connection.invoke("SendMessage", message).catch(function (err) {
                 return console.error(err.toString());
             });
             event.preventDefault();
+            document.getElementById("messageInput").value = ''; // Clearing message box for next input
         });
     </script>
 }

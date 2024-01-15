@@ -1,16 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using SwiftChat.Data;
+using SwiftChat.Models;
 
 namespace SwiftChat.Controllers
 {
     public class ChatController : Controller
     {
-        // GET: Chat/Index. Testing
-        public IActionResult Index()
-        {
+        private readonly UserManager<ApplicationUser> _userManager;
 
-            return View();
+        public ChatController(UserManager<ApplicationUser> userManager)
+        {
+            _userManager = userManager;
         }
 
-        // Probably will add actions related to chat here (like retrieving chat history)
+        // GET: Chat/Index
+        public async Task<IActionResult> Index()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                // Redirect to login page or handle the case where the user is not logged in
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Pass the user's information to the view
+            return View(user);
+        }
     }
 }
