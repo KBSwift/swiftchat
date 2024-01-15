@@ -21,20 +21,20 @@
 
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<ul class="navbar-nav flex-grow-1">
-						<!-- Single Home link for both authenticated and unauthenticated users -->
-						<li class="nav-item">
+						<!-- Single Home link for both authenticated and unauthenticated users. Using logo for home button. Deprecating Home below -->
+						@* <li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-						</li>
+						</li> *@
 
 						<!-- Conditional navbar links based on authentication status -->
 						@if (User?.Identity?.IsAuthenticated == true)
 						{
 							<!-- When user is logged in -->
 							<li class="nav-item">
-								<a class="nav-link text-dark">@User.Identity.Name</a>
+								<a class="nav-link text-dark" asp-area="" asp-controller="user" asp-action="Index">@User.Identity.Name</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Chat" asp-action="Index">Join Chat</a>
+								<a class="nav-link text-dark" asp-area="" asp-controller="chat" asp-action="Index">Join Chat</a>
 							</li>
 							<li class="nav-item">
 								<form method="post" asp-area="Identity" asp-page="/Account/Logout" class="form-inline">

@@ -1,16 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using SwiftChat.Models;
 
 namespace SwiftChat.Controllers
 {
     public class UserController : Controller
     {
-        public IActionResult Index()
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public UserController(UserManager<ApplicationUser> userManager)
         {
-			if (TempData["SuccessMessage"] != null)
-			{
-				ViewBag.SuccessMessage = TempData["SuccessMessage"];
-			}
-			return View();
+            _userManager = userManager;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
         }
     }
 }

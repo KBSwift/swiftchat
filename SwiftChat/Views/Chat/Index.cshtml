@@ -8,11 +8,13 @@
     <!-- Messages will be displayed here -->
 </div>
 
+<label>@Model.UserName</label>
 <input type="text" id="messageInput" placeholder="Your message" />
 <button id="sendButton">Send</button>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+    
     <script>
         // Create a connection to the SignalR hub
         let connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
@@ -34,7 +36,7 @@
             document.getElementById("messageArea").appendChild(msg);
         });
 
-        // Send button actions
+        // Send button actions and clicking
         document.getElementById("sendButton").addEventListener("click", function (event) {
             let message = document.getElementById("messageInput").value;
             // Send message to server
@@ -43,6 +45,18 @@
             });
             event.preventDefault();
             document.getElementById("messageInput").value = ''; // Clearing message box for next input
+        });
+
+        document.getElementById("messageInput").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                let message = document.getElementById("messageInput").value;
+                // Send message to server
+                connection.invoke("SendMessage", message).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                event.preventDefault();
+                document.getElementById("messageInput").value = '';
+            }
         });
     </script>
 }
