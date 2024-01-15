@@ -13,7 +13,7 @@
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
 				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SwiftChat</a>
-
+				
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -21,17 +21,15 @@
 
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<ul class="navbar-nav flex-grow-1">
-						<!-- Starting links -->
-						@* Will possibly add more links here. Undecided *@
+						<!-- Single Home link for both authenticated and unauthenticated users -->
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+						</li>
 
-						<!-- Conditional links based on authentication status. Logged in vs out. -->
-						@* ORIGINAL IMPLEMENTATION @if (User.Identity.IsAuthenticated)*@
-						@if (User?.Identity?.IsAuthenticated == true) // added null-conditional operator since object is not nll when view is rendered. Just before, hence warning
+						<!-- Conditional navbar links based on authentication status -->
+						@if (User?.Identity?.IsAuthenticated == true)
 						{
-							<!-- Display username and Logout button when user is logged in -->
-							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="UserHome">Home</a>
-							</li>
+							<!-- When user is logged in -->
 							<li class="nav-item">
 								<a class="nav-link text-dark">@User.Identity.Name</a>
 							</li>
@@ -46,10 +44,7 @@
 						}
 						else
 						{
-							<!-- Display Login button when user is not logged in -->
-							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-							</li>
+							<!-- When user is logged out -->
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
 							</li>
@@ -58,7 +53,6 @@
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
 						</li>
-
 					</ul>
 				</div>
 			</div>

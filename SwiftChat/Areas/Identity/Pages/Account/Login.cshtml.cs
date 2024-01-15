@@ -99,7 +99,7 @@ namespace SwiftChat.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
-            returnUrl ??= Url.Content("~/");
+            returnUrl ??= Url.Content("~/home");
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -111,7 +111,7 @@ namespace SwiftChat.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/");
+            returnUrl ??= Url.Content("~/home");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -134,8 +134,8 @@ namespace SwiftChat.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
                     TempData["SuccessMessage"] = "You have successfully logged in."; // temp data for success message
-                    return RedirectToAction("UserHome", "Home"); // redirect to user home vs regular home
-                }
+                    return LocalRedirect(returnUrl);
+				}
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });

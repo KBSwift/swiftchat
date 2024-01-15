@@ -18,7 +18,32 @@ namespace SwiftChat.Controllers
             _userManager = userManager; // Initialize UserManager
         }
 
-        public IActionResult Index()
+        [Route("home/")]
+        public async Task<IActionResult> Index()
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    _logger.LogError("User not found for UserHome page.");
+                    return NotFound("User not found");
+                }
+
+                ViewBag.Username = user.UserName;
+                if (TempData["SuccessMessage"] != null)
+                {
+                    ViewBag.SuccessMessage = TempData["SuccessMessage"];
+                }
+                return View("UserHome"); // Render UserHome view
+            }
+            else
+            {
+                return View(); // Render public home view (index)
+            }
+        }
+
+        /*public IActionResult Index()
         {
             // Initially for logging in, now using for logout 
             if (TempData["SuccessMessage"] != null)
@@ -27,6 +52,7 @@ namespace SwiftChat.Controllers
             }
             return View();
         }
+
 
         [Authorize]
         public async Task<IActionResult> UserHome()
@@ -49,7 +75,7 @@ namespace SwiftChat.Controllers
             }
 
             return View();
-        }
+        }*/
 
         public IActionResult Privacy()
         {
