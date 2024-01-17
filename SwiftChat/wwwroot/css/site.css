@@ -20,3 +20,14 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+#messageInput {
+    min-height: 20px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    
+}
+
+.message-placeholder {
+    color: #ccc;
+}
