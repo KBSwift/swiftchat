@@ -4,6 +4,7 @@
         const input = document.getElementById(inputId);
         const pickerOptions = {
             onEmojiSelect: emoji => {
+
                 input.value += emoji.native;
                 input.focus();
                 hidePicker(); // Hidin picker after selecting an emoji. Might change later

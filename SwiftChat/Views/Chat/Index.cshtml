@@ -13,16 +13,17 @@
 <div id="messageInput" class="message-placeholder" contenteditable="true" data-is-error="false"></div>
 
 <button id="emojiButton">😊</button>
-<button id="sendButton">Send</button>
+<button id="sendButton" class="w-100 btn btn-lg btn-primary"">Send</button>
 
 @section Scripts {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
-	@Html.Raw("<script src='https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js'></script>") @* handling '@' symbol in url with razor '@@' syntax *@
+	@* handling '@' symbol in url with razor '@@' syntax below *@
+	@Html.Raw("<script src='https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js'></script>")
 	<script src="~/js/emoji-picker.js"></script>
 	<script src="~/js/chat.js" asp-append-version="true"></script>
 
 	<script>
 		initializeChatSignalR();
-		initializeEmojiPicker('emojiButton', "messageInput");
+		initializeEmojiPicker("emojiButton", "messageInput");
 	</script>
 }
