@@ -39,6 +39,7 @@ namespace SwiftChat.Controllers
             }
             else
             {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
                 return View(); // Render public home view (index)
             }
         }

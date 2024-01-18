@@ -25,9 +25,32 @@ body {
     min-height: 20px;
     border: 1px solid #ccc;
     padding: 5px;
-    
+}
+
+#messageInput:focus {
+    color: black;
 }
 
 .message-placeholder {
     color: #ccc;
+}
+
+@keyframes wiggle {
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+#messageInput[data-is-error="true"] {
+    color: rgb(176, 15, 4);
+    /*font-weight: bold;*/
+    animation: wiggle 0.5s ease-in-out;
 }

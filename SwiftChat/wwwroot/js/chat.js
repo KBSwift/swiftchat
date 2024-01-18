@@ -11,7 +11,7 @@ function initializeChatSignalR() {
         return console.error(err.toString());
     });
 
-    // Disable the send button until the connection is established.
+    // Disable the send button until the connection is established
     document.getElementById("sendButton").disabled = true;
 
     // Handling incoming messages
@@ -37,17 +37,43 @@ function initializeChatSignalR() {
 }
 
 function sendMessage() {
-    let message = document.getElementById("messageInput").textContent.trim();
+    let messageInput = document.getElementById("messageInput");
+    let message = messageInput.textContent.trim();
     const placeholderText = "What I want to say is ....";
+    const isError = messageInput.getAttribute("data-is-error") === "true";
 
-    if (message !== "" && message !== placeholderText) {
+    if ((message === "" || message === placeholderText) && !isError) {
+        messageInput.textContent = "Please enter a message here first";
+        messageInput.classList.add("error");
+        messageInput.setAttribute("data-is-error", "true");
+    } else if (!isError) {
         // Send message to server
         connection.invoke("SendMessage", message).catch(function (err) {
             return console.error(err.toString());
         });
-        document.getElementById("messageInput").textContent = ''; // Clearing message box for next input
+        messageInput.textContent = "";
+        messageInput.setAttribute('data-is-error', 'false');
     }
 }
+
+document.getElementById("messageInput").addEventListener("focus", function () {
+    let messageInput = document.getElementById("messageInput");
+    if (messageInput.getAttribute('data-is-error') === 'true') {
+        messageInput.textContent = '';
+        messageInput.classList.remove("error");
+        messageInput.setAttribute('data-is-error', 'false');
+    }
+});
+
+document.getElementById("messageInput").addEventListener("input", function () {
+    let messageInput = document.getElementById("messageInput");
+    if (messageInput.getAttribute('data-is-error') === 'true') {
+        messageInput.textContent = '';
+        messageInput.classList.remove("error");
+        messageInput.setAttribute('data-is-error', 'false');
+    }
+});
+
 
 // ChatHub input field behavior handling
 document.addEventListener("DOMContentLoaded", function () {
