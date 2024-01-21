@@ -3,6 +3,7 @@ using SwiftChat.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using SwiftChat.Models.Entities;
 
 namespace SwiftChat.Controllers
 {

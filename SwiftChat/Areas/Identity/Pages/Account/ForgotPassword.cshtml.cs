@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using SwiftChat.Models;
+using SwiftChat.Models.Entities;
 
 namespace SwiftChat.Areas.Identity.Pages.Account
 {

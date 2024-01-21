@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SwiftChat.Models
+namespace SwiftChat.Models.Entities
 {
     public class ChatMessage
     {

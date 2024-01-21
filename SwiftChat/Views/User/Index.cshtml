@@ -1,40 +1,63 @@
-﻿@model SwiftChat.Models.ApplicationUser
+﻿@model SwiftChat.Models.Dtos.UserProfileDto
 @{
     ViewData["Title"] = "Profile Information";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-controller="User" asp-action="UpdateProfile" method="post" id="profileForm">
+<form asp-controller="User" asp-action="UpdateProfile" method="post" enctype="multipart/form-data" id="profileForm">
     <div>
         <div>
             <h1>@Model.UserName</h1>
-           @*  <label>Name:</label> will allow editing username in future
-            <input type="text" value="@Model.UserName" disabled class="profile-field" /> *@
+            @* <input type="hidden" name="UserName" value="@Model.UserName" /> *@
         </div>
         <div>
             <label>Profile Picture:</label>
-            <img src="@Model.ProfilePicture" alt="Profile Picture" />
-            <!-- Need to add logic for changing profile pictures here -->
+            
+            @if (Model.ProfilePicture != null)
+            {
+                var base64 = Convert.ToBase64String(Model.ProfilePicture);
+                var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+                <img src="@imgSrc" alt="Profile Picture" />
+            }
+            else
+            {
+                <img src="~/images/default-profile.png" alt="Default Profile Picture" title="@Model.UserName&#39;s lookin' good!" />
+            }
+
+            <!-- File input for new profile picture - Broken -->
+            @* <label>TEST<input type="file" name="ProfilePictureFile" accept="image/*" /></label> *@
         </div>
         <div>
             <label>About me:</label><br />
-            <textarea asp-for="Bio" disabled class="profile-field"></textarea>
+            <textarea name="Bio" class="profile-field">@Model.Bio</textarea>
         </div>
+
         <div>
             <label>Birthday</label>
-            @{
-                var dob = Model.DateOfBirth != default ? Model.DateOfBirth.ToString("yyyy-MM-dd") : "";
-            }
-            <input type="date" asp-for="DateOfBirth" value="@dob" disabled class="profile-field" />
+            <input type="date" name="DateOfBirth"
+                   value="@(Model.DateOfBirth.HasValue && Model.DateOfBirth != DateTime.MinValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")"
+                   class="profile-field" />
         </div>
+
         <div>
             <label>Email:</label>
-            <input asp-for="Email" disabled class="profile-field" />
+            <!-- Input for NewEmail, name matches UserProfileDto property. Need to update auth. -->
+            <input type="email" name="NewEmail" value="@Model.Email" class="profile-field" />
         </div>
-        
-        <button type="button" onclick="toggleEdit()" id="editButton">Update Information</button>
-        <button type="submit" disabled id="saveButton">Save Changes</button>
+        <!-- password update fields -->
+        <div>
+            <label>Current Password:</label>
+            <!-- Input for CurrentPassword, name matches UserProfileDto property -->
+            <input type="password" name="CurrentPassword" />
+        </div>
+        <div>
+            <label>New Password:</label>
+            <!-- Input for NewPassword, name matches UserProfileDto property -->
+            <input type="password" name="NewPassword" />
+        </div>
+        <button type="button" onclick="toggleEdit()" id="editButton">Edit</button>
+        <button type="submit" id="saveButton">Save Changes</button>
     </div>
 </form>
 

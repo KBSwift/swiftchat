@@ -4,6 +4,7 @@ using SwiftChat.Data;
 using SwiftChat.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
+using SwiftChat.Models.Entities;
 
 namespace SwiftChat.Hubs
 {

@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using SwiftChat.Models;
+using SwiftChat.Models.Entities;
 
 namespace SwiftChat.Areas.Identity.Pages.Account
 {

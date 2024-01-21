@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SwiftChat.Data;
-using SwiftChat.Models;
+using SwiftChat.Models.Entities;
 
 namespace SwiftChat.Controllers
 {
