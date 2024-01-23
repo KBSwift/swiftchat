@@ -1,75 +1,280 @@
 ﻿@model SwiftChat.Models.Dtos.UserProfileDto
 @{
-    ViewData["Title"] = "Profile Information";
+	ViewData["Title"] = "Your Profile";
 }
 
-<h2>@ViewData["Title"]</h2>
+@* <h2>@ViewData["Title"]</h2> *@
 
-<form asp-controller="User" asp-action="UpdateProfile" method="post" enctype="multipart/form-data" id="profileForm">
-    <div>
-        <div>
-            <h1>@Model.UserName</h1>
-            @* <input type="hidden" name="UserName" value="@Model.UserName" /> *@
-        </div>
-        <div>
-            <label>Profile Picture:</label>
-            
-            @if (Model.ProfilePicture != null)
-            {
-                var base64 = Convert.ToBase64String(Model.ProfilePicture);
-                var imgSrc = String.Format("data:image/png;base64,{0}", base64);
-                <img src="@imgSrc" alt="Profile Picture" />
-            }
-            else
-            {
-                <img src="~/images/default-profile.png" alt="Default Profile Picture" title="@Model.UserName&#39;s lookin' good!" />
-            }
+<div id="alertPlaceholder"></div>
+<div class="row">
+	<div class="col-md-4">
 
-            <!-- File input for new profile picture - Broken -->
-            @* <label>TEST<input type="file" name="ProfilePictureFile" accept="image/*" /></label> *@
-        </div>
-        <div>
-            <label>About me:</label><br />
-            <textarea name="Bio" class="profile-field">@Model.Bio</textarea>
-        </div>
+		<div>
+			<h1>@Model.UserName's Account</h1>
+			@* <input type="hidden" name="UserName" value="@Model.UserName" /> *@
+		</div>
+		<hr />
 
-        <div>
-            <label>Birthday</label>
-            <input type="date" name="DateOfBirth"
-                   value="@(Model.DateOfBirth.HasValue && Model.DateOfBirth != DateTime.MinValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")"
-                   class="profile-field" />
-        </div>
+		<div class="form-floating mb-3">
+			<label>Profile Picture</label>
 
-        <div>
-            <label>Email:</label>
-            <!-- Input for NewEmail, name matches UserProfileDto property. Need to update auth. -->
-            <input type="email" name="NewEmail" value="@Model.Email" class="profile-field" />
-        </div>
-        <!-- password update fields -->
-        <div>
-            <label>Current Password:</label>
-            <!-- Input for CurrentPassword, name matches UserProfileDto property -->
-            <input type="password" name="CurrentPassword" />
-        </div>
-        <div>
-            <label>New Password:</label>
-            <!-- Input for NewPassword, name matches UserProfileDto property -->
-            <input type="password" name="NewPassword" />
-        </div>
-        <button type="button" onclick="toggleEdit()" id="editButton">Edit</button>
-        <button type="submit" id="saveButton">Save Changes</button>
-    </div>
-</form>
+			@if (Model.ProfilePicture != null)
+			{
+				var base64 = Convert.ToBase64String(Model.ProfilePicture);
+				var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+				<img src="@imgSrc" alt="Profile Picture" title="Lookin' good!" />
+			}
+			else
+			{
+				<img src="~/images/default-profile.png" alt="Default Profile Picture" title="Lookin' default!" />
+			}
+
+			<!-- File input for new profile picture - Broken -->
+			@* <label>TEST<input type="file" name="ProfilePictureFile" accept="image/*" /></label> *@
+		</div>
+
+		<form asp-controller="User" asp-action="UpdateProfileDetails" method="post" id="profileDetailsForm" onsubmit="submitProfileDetails(event)">
+
+			<div>
+				<hr /><h3>Profile Details</h3><hr />
+			</div>
+
+			<div class="form-floating mb-3">
+				<textarea name="Bio" class="profile-detail form-control" id="profileBio" placeholder="" disabled>@Model.Bio</textarea>
+				<label class="form-label" for="profileBio">About me</label>
+			</div>
+
+			<div class="form-floating mb-3">
+				<input type="date" name="DateOfBirth" id="profileBirthday"
+					   value="@(Model.DateOfBirth.HasValue && Model.DateOfBirth != DateTime.MinValue ? Model.DateOfBirth.Value.ToString("yyyy-MM-dd") : "")"
+					   class="profile-detail form-control" disabled />
+				<label class="form-label" for="profileBirthday">Birthday</label>
+			</div>
+
+			<button type="button" id="detailEditCancelButton" class="btn btn-primary"
+					onclick="toggleEditMode('detailEditCancelButton', 'profile-detail')">
+				Edit
+			</button>
+			<button type="submit" id="detailSaveButton" class="btn btn-primary">Save Changes</button>
+		</form>
+
+		<form asp-controller="User" asp-action="UpdateProfileCredentials" method="post" enctype="multipart/form-data" id="profileCredentialsForm" onsubmit="submitProfileCredentials(event)">
+			<div>
+				<hr /><h3>Update Credentials</h3><hr />
+			</div>
+
+			<div class="form-floating mb-3">
+				<!-- Input for NewEmail, name matches UserProfileDto property. Need to update auth. -->
+				<input type="email" asp-for="NewEmail" name="NewEmail" value="@Model.Email" class="profile-credential form-control" id="profileEmail" placeholder="" disabled />
+				<label class="form-label" for="profileEmail">Email</label>
+				<span asp-validation-for="NewEmail" class="text-danger"></span>
+			</div>
+
+			<div class="form-floating mb-3">
+				<!-- Input for NewPassword, name matches UserProfileDto property -->
+				<input type="password" asp-for="NewPassword" name="NewPassword" class="profile-credential form-control" id="profileNewPassword" placeholder="" onkeyup="toggleConfirmPasswordField()" disabled />
+				<label class="form-label" for="profileNewPassword">New Password</label>
+				<span asp-validation-for="NewPassword" class="text-danger"></span>
+			</div>
+
+			<div class="form-floating mb-3" id="confirmPasswordDiv" style="display: none;">
+				<input type="password" asp-for="ConfirmNewPassword" name="ConfirmNewPassword" class="profile-credential form-control" id="profileConfirmNewPassword" placeholder="" />
+				<label class="form-label" for="profileConfirmNewPassword">Confirm New Password</label>
+				<span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+			</div>
+
+			<div class="form-floating mb-3">
+				<!-- Input for CurrentPassword, name matches UserProfileDto property -->
+				<input type="password" asp-for="CurrentPassword" name="CurrentPassword" class="profile-credential form-control" id="profileCurrentPassword" placeholder="" disabled required />
+				<label class="form-label" for="profileCurrentPassword">Current Password</label>
+				<span asp-validation-for="CurrentPassword" class="text-danger"></span>
+			</div>
+
+			<button type="button" id="credentialEditCancelButton" class="btn btn-primary"
+					onclick="toggleEditMode('credentialEditCancelButton', 'profile-credential')">
+				Edit
+			</button>
+			<button type="submit" id="credentialSaveButton" class="btn btn-primary">Save Changes</button>
+		</form>
+
+	</div>
+</div>
 
 @section Scripts {
-    <script>
-        function toggleEdit() {
-            var fields = document.getElementsByClassName('profile-field');
-            for (var i = 0; i < fields.length; i++) {
-                fields[i].disabled = !fields[i].disabled;
-            }
-            document.getElementById('saveButton').disabled = !document.getElementById('saveButton').disabled;
-            document.getElementById('editButton').style.display = 'none';
-        }
-    </script>
+	<script>
+
+		async function submitProfileCredentials(event) {
+			event.preventDefault();
+			let formData = new FormData(document.getElementById('profileCredentialsForm'));
+			try {
+				let response = await fetch('/User/UpdateProfileCredentials', {
+					method: 'POST',
+					body: formData
+				});
+				if (response.ok) {
+					let result = await response.json();
+					// Update UI with new data
+					updateProfileCredentialsForm(result.data);
+					// Handle success - update UI or show a message
+					showSuccess('Details updated successfully!');
+					// Change button text and disable fields
+					changeToEditMode('credentialEditCancelButton', 'profile-credential', false);
+				} else {
+					// Handle errors - show error messages
+					const httpError = handleHttpError(response);
+					showError(httpError);
+				}
+			} catch (error) {
+				console.error('Error:', error);
+				showError('An error occurred while updating profile details.');
+			}
+
+			let newPassword = document.getElementById('profileNewPassword').value;
+			let confirmPassword = document.getElementById('profileConfirmNewPassword').value;
+			if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+				showError('New password and confirmation password do not match.');
+				return;
+			}
+		}
+
+		function updateProfileCredentialsForm(data) {
+			// Update form fields with new data
+			if (data.Bio !== undefined && data.Bio !== null) {
+				document.getElementById('profileBio').value = data.Bio;
+			}
+			if (data.DateOfBirth !== undefined && data.DateOfBirth !== null) {
+				document.getElementById('profileBirthday').value = data.DateOfBirth;
+			}
+			// Update other fields as needed
+		}
+
+		// START Async form submission handling
+
+		async function submitProfileDetails(event) {
+			event.preventDefault();
+			let formData = new FormData(document.getElementById('profileDetailsForm'));
+			try {
+				let response = await fetch('/User/UpdateProfileDetails', {
+					method: 'POST',
+					body: formData
+				});
+				if (response.ok) {
+					let result = await response.json();
+					// Update UI with new data
+					updateProfileDetailsForm(result.data);
+					// Handle success - update UI or show a message
+					showSuccess('Details updated successfully!');
+					// Change button text and disable fields
+					changeToEditMode('detailEditCancelButton', 'profile-detail', false);
+				} else {
+					// Handle errors - show error messages
+					const httpError = handleHttpError(response);
+					showError(httpError);
+				}
+			} catch (error) {
+				console.error('Error:', error);
+				showError('An error occurred while updating profile details.');
+			}
+		}
+
+		function updateProfileDetailsForm(data) {
+			// Update form fields with new data
+			if (data.Bio !== undefined && data.Bio !== null) {
+				document.getElementById('profileBio').value = data.Bio;
+			}
+			if (data.DateOfBirth !== undefined && data.DateOfBirth !== null) {
+				document.getElementById('profileBirthday').value = data.DateOfBirth;
+			}
+			// Update other fields as needed
+		}
+
+		function changeToEditMode(buttonId, formClass, isEditMode) {
+			let button = document.getElementById(buttonId);
+			let fields = document.getElementsByClassName(formClass);
+
+			if (!isEditMode) {
+				button.textContent = 'Edit';
+				disableFields(fields);
+			} else {
+				button.textContent = 'Cancel Changes';
+				enableFields(fields);
+			}
+		}
+
+		// END Async form submission handling
+
+
+		// START logic for edit to cancel button
+
+		let originalData = {};
+		let isDetailEditMode = false;
+		let isCredentialEditMode = false;
+
+		document.addEventListener('DOMContentLoaded', function () {
+			saveOriginalData('profile-detail');
+			saveOriginalData('profile-credential');
+		});
+
+		function toggleEditMode(buttonID, formClass) {
+			let button = document.getElementById(buttonID);
+			let fields = document.getElementsByClassName(formClass);
+			let isEditMode = formClass === 'profile-detail' ? isDetailEditMode : isCredentialEditMode;
+
+			if (!isEditMode) {
+				button.textContent = 'Cancel Changes';
+				enableFields(fields);
+				saveOriginalData(formClass);
+			} else {
+				button.textContent = 'Edit';
+				disableFields(fields);
+				revertToOriginalData(formClass);
+				toggleConfirmPasswordField();
+			}
+
+			if (formClass === 'profile-detail') {
+				isDetailEditMode = !isDetailEditMode;
+			} else if (formClass === 'profile-credential') {
+				isCredentialEditMode = !isCredentialEditMode;
+			}
+		}
+
+		function enableFields(fields) {
+			for (let i = 0; i < fields.length; i++) {
+				fields[i].disabled = false;
+			}
+		}
+
+		function disableFields(fields) {
+			for (let i = 0; i < fields.length; i++) {
+				fields[i].disabled = true;
+			}
+		}
+
+		function saveOriginalData(formClass) {
+			originalData[formClass] = {};
+			let fields = document.getElementsByClassName(formClass);
+			for (let field of fields) {
+				originalData[formClass][field.name] = field.value;
+			}
+		}
+
+		function revertToOriginalData(formClass) {
+			let fields = document.getElementsByClassName(formClass);
+			for (let field of fields) {
+				field.value = originalData[formClass][field.name];
+			}
+		}
+
+		// END logic for edit to cancel button		
+
+		function toggleConfirmPasswordField() {
+			let newPassword = document.getElementById('profileNewPassword').value;
+			let confirmPasswordDiv = document.getElementById('confirmPasswordDiv');
+			if (newPassword.length > 0) {
+				confirmPasswordDiv.style.display = 'block';
+			} else {
+				confirmPasswordDiv.style.display = 'none';
+			}
+		}
+	</script>
 }

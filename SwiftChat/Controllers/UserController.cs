@@ -5,118 +5,135 @@ using SwiftChat.Models.Entities;
 
 namespace SwiftChat.Controllers
 {
-    public class UserController : Controller
-    {
-        private readonly UserManager<ApplicationUser> _userManager;
+	public class UserController : Controller
+	{
+		private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserController(UserManager<ApplicationUser> userManager)
-        {
-            _userManager = userManager;
-        }
+		public UserController(UserManager<ApplicationUser> userManager)
+		{
+			_userManager = userManager;
+		}
 
-        public async Task<IActionResult> Index()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound();
-            }
+		[Route("user/")]
+		public async Task<IActionResult> Index()
+		{
+			var user = await _userManager.GetUserAsync(User);
+			if (user == null)
+			{
+				return NotFound();
+			}
 
-            // Populating dto with user data
-            var userProfileDto = new UserProfileDto
-            {
-                UserName = user.UserName,
-                Bio = user.Bio,
-                ProfilePicture = user.ProfilePicture,
-                Email = user.Email,
-                DateOfBirth = user.DateOfBirth
-                // Map other properties as needed
-            };
+			// Populating dto with user data
+			var userProfileDto = new UserProfileDto
+			{
+				UserName = user.UserName,
+				Bio = user.Bio,
+				ProfilePicture = user.ProfilePicture,
+				Email = user.Email,
+				DateOfBirth = user.DateOfBirth
+				// possibly more properties
+			};
 
-            return View(userProfileDto);
-        }
+			return View(userProfileDto);
+		}
 
 
-        [HttpPost]
-        public async Task<IActionResult> UpdateProfile(UserProfileDto model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View("Index", model);
-            }
+		[HttpPost]
+		public async Task<IActionResult> UpdateProfileDetails(UserProfileDto model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View("Index", model);
+			}
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound();
-            }
+			var user = await _userManager.GetUserAsync(User);
+			if (user == null)
+			{
+				return NotFound();
+			}
 
-            // Updating the user properties
-            user.Bio = model.Bio;
-            user.DateOfBirth = model.DateOfBirth; // now nullable
+			// establishing user properties from model
+			user.Bio = model.Bio;
+			user.DateOfBirth = model.DateOfBirth; // now nullable
 
-            // Handle profile picture update WORK IN PROGRESS. Will use VAR BIN
-            //if (profilePictureFile != null && profilePictureFile.Length > 0)
-            //{
-            //    using (var memoryStream = new MemoryStream())
-            //    {
-            //        await profilePictureFile.CopyToAsync(memoryStream);
-            //        user.ProfilePicture = memoryStream.ToArray();
-            //    }
-            //}
+			var result = await _userManager.UpdateAsync(user);
+			if (result.Succeeded)
+			{
+				// Create a response object with updated details from the user object
+				var updatedProfile = new
+				{
+					Bio = user.Bio,
+					DateOfBirth = user.DateOfBirth.HasValue ? user.DateOfBirth.Value.ToString("yyyy-MM-dd") : null
+					// Add other fields from the user object as needed
+				};
 
-            // Handle email update WIP
-            if (!string.IsNullOrWhiteSpace(model.NewEmail) && model.NewEmail != user.Email)
-            {
-                // Checking if the new email is already in use by another user
-                var existingUser = await _userManager.FindByEmailAsync(model.NewEmail);
-                if (existingUser != null && existingUser.Id != user.Id)
-                {
-                    ModelState.AddModelError("NewEmail", "Email is already in use.");
-                    return View("Index", model); // Return to the view with the error message
-                }
+				return Json(new { success = true, message = "Profile updated successfully.", data = updatedProfile });
+			}
+			else
+			{
+				return Json(new { success = false, message = "Error updating profile." });
+			}
+		}
 
-                // Updating the email
-                var setEmailResult = await _userManager.SetEmailAsync(user, model.NewEmail);
-                if (!setEmailResult.Succeeded)
-                {
-                    // Error handling
-                    foreach (var error in setEmailResult.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                    return View("Index", model); // Return to the view with the error messages
-                }
+		[HttpPost]
+		public async Task<IActionResult> UpdateProfileCredentials(UserProfileDto model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new { success = false, message = "Model state is not valid." });
+			}
 
-                // Send email confirmation. NEEDS REVIEW!
-                //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                //var callbackUrl = Url.Action(
-                //    "ConfirmEmail",
-                //    "Account",
-                //    new { userId = user.Id, code = code },
-                //    protocol: HttpContext.Request.Scheme);
-            }
+			var user = await _userManager.GetUserAsync(User);
+			if (user == null)
+			{
+				return Json(new { success = false, message = "User not found." });
+			}
 
-            // Handle password update. Need to revisit Core implementation
-            if (!string.IsNullOrWhiteSpace(model.CurrentPassword) && !string.IsNullOrWhiteSpace(model.NewPassword))
-            {
-                var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
-                if (!changePasswordResult.Succeeded)
-                {
-                    // Handle errors (e.g., current password is wrong, new password is weak)
-                    // Add model errors or handle as needed
-                }
-            }
+			if (!await _userManager.CheckPasswordAsync(user, model.CurrentPassword))
+			{
+				return Json(new { success = false, message = "Current password is incorrect." });
+			}
 
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-            {
-                // Handle errors during user update
-                // Add model errors or handle as needed
-            }
+			if (!string.IsNullOrWhiteSpace(model.NewEmail) && model.NewEmail != user.Email)
+			{
+				var existingUser = await _userManager.FindByEmailAsync(model.NewEmail);
+				if (existingUser != null && existingUser.Id != user.Id)
+				{
+					return Json(new { success = false, message = "Email is already in use." });
+				}
 
-            // Redirecting to index action method
-            return RedirectToAction("Index");
-        }
-    }
+				var setEmailResult = await _userManager.SetEmailAsync(user, model.NewEmail);
+				if (!setEmailResult.Succeeded)
+				{
+					return Json(new { success = false, message = "Failed to update email." });
+				}
+			}
+
+			if (!string.IsNullOrWhiteSpace(model.NewPassword))
+			{
+				if (model.NewPassword != model.ConfirmNewPassword)
+				{
+					return Json(new { success = false, message = "New password and confirmation password do not match." });
+				}
+
+				var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+				if (!changePasswordResult.Succeeded)
+				{
+					return Json(new { success = false, message = "Failed to change password." });
+				}
+			}
+
+			var result = await _userManager.UpdateAsync(user);
+			if (!result.Succeeded)
+			{
+				return Json(new { success = false, message = "Error updating profile." });
+			}
+
+			// Optionally, you can return updated user data here
+			return Json(new { success = true, message = "Profile updated successfully.", data = new { user.Email, user.UserName } });
+		}
+
+
+
+	}
 }

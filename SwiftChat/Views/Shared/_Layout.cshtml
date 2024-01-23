@@ -13,7 +13,7 @@
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
 				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SwiftChat</a>
-				
+
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -23,7 +23,7 @@
 					<ul class="navbar-nav flex-grow-1">
 						<!-- Single Home link for both authenticated and unauthenticated users. Using logo for home button. Deprecating Home below -->
 						@* <li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+						<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
 						</li> *@
 
 						<!-- Conditional navbar links based on authentication status -->
@@ -73,10 +73,17 @@
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/tempDataMessage.js"></script>
-	<script>
+	@* <script>
 		tempDataMessage(); // has default value of 2000ms
-	</script>
+	</script> *@
+	<script src="~/js/errorHandling.js" ></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="~/js/notification.js" asp-append-version="true"></script>
+
 	@await RenderSectionAsync("Scripts", required: false)
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
 </body>
 </html>
