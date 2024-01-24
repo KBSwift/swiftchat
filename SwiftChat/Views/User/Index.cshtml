@@ -5,7 +5,7 @@
 
 @* <h2>@ViewData["Title"]</h2> *@
 
-<div id="alertPlaceholder"></div>
+@* <div id="alertPlaceholder"></div> *@
 <div class="row">
 	<div class="col-md-4">
 
@@ -129,21 +129,12 @@
 				showError('An error occurred while updating profile details.');
 			}
 
-			let newPassword = document.getElementById('profileNewPassword').value;
-			let confirmPassword = document.getElementById('profileConfirmNewPassword').value;
-			if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-				showError('New password and confirmation password do not match.');
-				return;
-			}
 		}
 
 		function updateProfileCredentialsForm(data) {
 			// Update form fields with new data
 			if (data.Bio !== undefined && data.Bio !== null) {
-				document.getElementById('profileBio').value = data.Bio;
-			}
-			if (data.DateOfBirth !== undefined && data.DateOfBirth !== null) {
-				document.getElementById('profileBirthday').value = data.DateOfBirth;
+				document.getElementById('profileEmail').value = data.Email;
 			}
 			// Update other fields as needed
 		}

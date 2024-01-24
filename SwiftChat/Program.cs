@@ -50,6 +50,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 // Adding SignalR services
 builder.Services.AddSignalR();
 
+builder.Logging.AddConsole(); // Log to console
 var app = builder.Build();
 
 // Configuring HTTP request pipeline

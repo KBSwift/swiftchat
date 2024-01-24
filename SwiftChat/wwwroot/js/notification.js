@@ -1,4 +1,4 @@
-﻿function showAlert(message, type) {
+﻿function showAlert(message, time, type) {
     const alertPlaceholder = document.getElementById('alertPlaceholder');
     const alert = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
                       ${message}
@@ -8,13 +8,13 @@
 
     setTimeout(() => {
         alertPlaceholder.innerHTML = '';
-    }, 2000);
+    }, time);
 }
 
-function showSuccess(message) {
-    showAlert(message, 'success');
+function showSuccess(message, time = 3000) {
+    showAlert(message, time, 'success');
 }
 
-function showError(message) {
-    showAlert(message, 'danger');
+function showError(message, time = 3000) {
+    showAlert(message, time, 'danger');
 }

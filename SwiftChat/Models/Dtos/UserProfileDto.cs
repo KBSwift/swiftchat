@@ -18,7 +18,7 @@ namespace SwiftChat.Models.Dtos
 		[Display(Name = "Email")]
 		public string? NewEmail { get; set; }
 
-		[Required]
+		
 		public string? CurrentPassword { get; set; }
 
 		[DataType(DataType.Password)]

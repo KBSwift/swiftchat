@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using SwiftChat.Controllers;
 using SwiftChat.Models.Entities;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace SwiftChat.Areas.Identity.Pages.Account
 {
@@ -52,6 +54,8 @@ namespace SwiftChat.Areas.Identity.Pages.Account
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public string ReturnUrl { get; set; }
+
+        //public string EmailConfirmationUrl { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -109,52 +113,56 @@ namespace SwiftChat.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-        {
-            returnUrl ??= Url.Content("~/home");
+		public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+		{
+			returnUrl ??= Url.Content("~/home");
+			ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+			if (ModelState.IsValid)
+			{
+				var userName = Input.UsernameOrEmail;
+				ApplicationUser user = null;
 
-            if (ModelState.IsValid)
-            {
-                // Determine if the input is an email or a username
-                var userName = Input.UsernameOrEmail;
-                if (new EmailAddressAttribute().IsValid(userName)) // Check if input is an email
-                {
-                    var user = await _userManager.FindByEmailAsync(userName);
-                    if (user != null)
-                    {
-                        userName = user.UserName; // Use the username associated with the email
-                    }
-                }
-
-                // Attempt to sign in with either username or email
-                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-                    TempData["SuccessMessage"] = "You have successfully logged in."; // temp data for success message
-                    return LocalRedirect(returnUrl);
+				if (new EmailAddressAttribute().IsValid(userName))
+				{
+					user = await _userManager.FindByEmailAsync(userName);
+					if (user != null)
+					{
+						userName = user.UserName;
+					}
 				}
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
-            }
+				else
+				{
+					user = await _userManager.FindByNameAsync(userName);
+				}
 
-            // If we got this far, something failed, redisplay form
-            return Page();
-        }
+				if (user != null)
+				{
+					var passwordCheck = await _userManager.CheckPasswordAsync(user, Input.Password);
+					if (passwordCheck)
+					{
+						if (!await _userManager.IsEmailConfirmedAsync(user))
+						{
+							// Redirect to a page informing the user to confirm their email
+							return RedirectToPage("RegisterConfirmation", new { email = user.Email, returnUrl });
+						}
 
-    }
+						// Sign in the user
+						await _signInManager.SignInAsync(user, Input.RememberMe);
+						_logger.LogInformation("User logged in.");
+						TempData["SuccessMessage"] = "You have successfully logged in.";
+						return LocalRedirect(returnUrl);
+					}
+				}
+
+				ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+			}
+
+			// If we got this far, something failed, redisplay form
+			return Page();
+		}
+
+
+
+	}
 }
