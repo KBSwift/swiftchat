@@ -32,14 +32,12 @@ namespace SwiftChat.Controllers
                 }
 
                 ViewBag.Username = user.UserName;
-                if (TempData["SuccessMessage"] != null)
-                {
-                    ViewBag.SuccessMessage = TempData["SuccessMessage"];
-                }
+
                 return View("UserHome"); // Render UserHome view
             }
             else
             {
+                //THIS ONE
                 ViewBag.SuccessMessage = TempData["SuccessMessage"];
                 return View(); // Render public home view (index)
             }

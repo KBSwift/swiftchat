@@ -67,11 +67,11 @@ namespace SwiftChat.Controllers
 					// Add other fields from the user object as needed
 				};
 
-				return Json(new { success = true, message = "Profile updated successfully.", data = updatedProfile });
+				return Json(new { success = true, message = "Details updated successfully.", data = updatedProfile });
 			}
 			else
 			{
-				return Json(new { success = false, message = "Error updating profile." });
+				return Json(new { success = false, message = "Error updating details. Try again." });
 			}
 		}
 
@@ -87,6 +87,11 @@ namespace SwiftChat.Controllers
 			if (user == null)
 			{
 				return Json(new { success = false, message = "User not found." });
+			}
+
+			if (string.IsNullOrWhiteSpace(model.CurrentPassword))
+			{
+				return Json(new { success = false, message = "Current password cannot be blank." });
 			}
 
 			if (!await _userManager.CheckPasswordAsync(user, model.CurrentPassword))
@@ -130,7 +135,7 @@ namespace SwiftChat.Controllers
 			}
 
 			// Optionally, you can return updated user data here
-			return Json(new { success = true, message = "Profile updated successfully.", data = new { user.Email, user.UserName } });
+			return Json(new { success = true, message = "Credentials updated successfully.", data = new { user.Email, user.UserName } });
 		}
 
 

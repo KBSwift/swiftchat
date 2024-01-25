@@ -10,7 +10,7 @@
 </head>
 <body>
 	<header>
-		<div id="alertPlaceholder"></div>
+		
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
 				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SwiftChat</a>
@@ -58,6 +58,7 @@
 				</div>
 			</div>
 		</nav>
+		<div id="alertPlaceholder"></div> @* FIXME: will make dynamic and relative to vp *@
 	</header>
 
 	<div class="container">
@@ -74,13 +75,14 @@
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/tempDataMessage.js"></script>
-	@* <script>
-		tempDataMessage(); // has default value of 2000ms
-	</script> *@
-	<script src="~/js/errorHandling.js" ></script>
-	<script src="~/js/site.js" asp-append-version="true"></script>
-	<script src="~/js/notification.js" asp-append-version="true"></script>
 
+	<script src="~/js/errorHandling.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script>
+		let successMessage = '@TempData["SuccessMessage"]';
+		let errorMessage = '@TempData["ErrorMessage"]';
+	</script>
+	<script src="~/js/notification.js" asp-append-version="true"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");

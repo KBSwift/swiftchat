@@ -150,6 +150,7 @@ namespace SwiftChat.Areas.Identity.Pages.Account
 						// Sign in the user
 						await _signInManager.SignInAsync(user, Input.RememberMe);
 						_logger.LogInformation("User logged in.");
+						TempData.Clear();
 						TempData["SuccessMessage"] = "You have successfully logged in.";
 						return LocalRedirect(returnUrl);
 					}

@@ -3,15 +3,11 @@
 	ViewData["Title"] = "Your Profile";
 }
 
-@* <h2>@ViewData["Title"]</h2> *@
-
-@* <div id="alertPlaceholder"></div> *@
 <div class="row">
 	<div class="col-md-4">
 
 		<div>
 			<h1>@Model.UserName's Account</h1>
-			@* <input type="hidden" name="UserName" value="@Model.UserName" /> *@
 		</div>
 		<hr />
 
@@ -52,10 +48,10 @@
 			</div>
 
 			<button type="button" id="detailEditCancelButton" class="btn btn-primary"
-					onclick="toggleEditMode('detailEditCancelButton', 'profile-detail')">
+					onclick="toggleEditMode('detailEditCancelButton', 'detailSaveButton', 'profile-detail')">
 				Edit
 			</button>
-			<button type="submit" id="detailSaveButton" class="btn btn-primary">Save Changes</button>
+			<button type="submit" id="detailSaveButton" class="btn btn-primary" style="display:none">Save Changes</button>
 		</form>
 
 		<form asp-controller="User" asp-action="UpdateProfileCredentials" method="post" enctype="multipart/form-data" id="profileCredentialsForm" onsubmit="submitProfileCredentials(event)">
@@ -91,10 +87,10 @@
 			</div>
 
 			<button type="button" id="credentialEditCancelButton" class="btn btn-primary"
-					onclick="toggleEditMode('credentialEditCancelButton', 'profile-credential')">
+					onclick="toggleEditMode('credentialEditCancelButton', 'credentialSaveButton', 'profile-credential')">
 				Edit
 			</button>
-			<button type="submit" id="credentialSaveButton" class="btn btn-primary">Save Changes</button>
+			<button type="submit" id="credentialSaveButton" class="btn btn-primary" style="display:none">Save Changes</button>
 		</form>
 
 	</div>
@@ -113,14 +109,15 @@
 				});
 				if (response.ok) {
 					let result = await response.json();
-					// Update UI with new data
-					updateProfileCredentialsForm(result.data);
-					// Handle success - update UI or show a message
-					showSuccess('Details updated successfully!');
-					// Change button text and disable fields
-					changeToEditMode('credentialEditCancelButton', 'profile-credential', false);
+					let currentPasswordField = document.getElementById("profileCurrentPassword");
+					if (!result.success) {
+						showError(result.message);
+						currentPasswordField.classList.add('is-invalid');
+						return;
+					}
+					showSuccess(result.message);
+					toggleEditMode('credentialEditCancelButton', 'credentialSaveButton', 'profile-credential', false);
 				} else {
-					// Handle errors - show error messages
 					const httpError = handleHttpError(response);
 					showError(httpError);
 				}
@@ -129,14 +126,6 @@
 				showError('An error occurred while updating profile details.');
 			}
 
-		}
-
-		function updateProfileCredentialsForm(data) {
-			// Update form fields with new data
-			if (data.Bio !== undefined && data.Bio !== null) {
-				document.getElementById('profileEmail').value = data.Email;
-			}
-			// Update other fields as needed
 		}
 
 		// START Async form submission handling
@@ -149,16 +138,15 @@
 					method: 'POST',
 					body: formData
 				});
+				for (let [key, value] of formData.entries()) {
+					console.log(key, value);
+				}
 				if (response.ok) {
 					let result = await response.json();
-					// Update UI with new data
-					updateProfileDetailsForm(result.data);
-					// Handle success - update UI or show a message
-					showSuccess('Details updated successfully!');
-					// Change button text and disable fields
-					changeToEditMode('detailEditCancelButton', 'profile-detail', false);
+					saveOriginalData('profile-detail');
+					showSuccess(result.message);
+					toggleEditMode('detailEditCancelButton', 'detailSaveButton', 'profile-detail', false);
 				} else {
-					// Handle errors - show error messages
 					const httpError = handleHttpError(response);
 					showError(httpError);
 				}
@@ -168,32 +156,7 @@
 			}
 		}
 
-		function updateProfileDetailsForm(data) {
-			// Update form fields with new data
-			if (data.Bio !== undefined && data.Bio !== null) {
-				document.getElementById('profileBio').value = data.Bio;
-			}
-			if (data.DateOfBirth !== undefined && data.DateOfBirth !== null) {
-				document.getElementById('profileBirthday').value = data.DateOfBirth;
-			}
-			// Update other fields as needed
-		}
-
-		function changeToEditMode(buttonId, formClass, isEditMode) {
-			let button = document.getElementById(buttonId);
-			let fields = document.getElementsByClassName(formClass);
-
-			if (!isEditMode) {
-				button.textContent = 'Edit';
-				disableFields(fields);
-			} else {
-				button.textContent = 'Cancel Changes';
-				enableFields(fields);
-			}
-		}
-
 		// END Async form submission handling
-
 
 		// START logic for edit to cancel button
 
@@ -206,17 +169,20 @@
 			saveOriginalData('profile-credential');
 		});
 
-		function toggleEditMode(buttonID, formClass) {
-			let button = document.getElementById(buttonID);
+		function toggleEditMode(editButtonID, submitButtonId, formClass) {
+			let editButton = document.getElementById(editButtonID);
+			let submitButton = document.getElementById(submitButtonId);
 			let fields = document.getElementsByClassName(formClass);
 			let isEditMode = formClass === 'profile-detail' ? isDetailEditMode : isCredentialEditMode;
 
 			if (!isEditMode) {
-				button.textContent = 'Cancel Changes';
+				editButton.textContent = 'Cancel Changes';
+				submitButton.style.display = '';
 				enableFields(fields);
 				saveOriginalData(formClass);
 			} else {
-				button.textContent = 'Edit';
+				editButton.textContent = 'Edit';
+				submitButton.style.display = 'none';
 				disableFields(fields);
 				revertToOriginalData(formClass);
 				toggleConfirmPasswordField();
@@ -225,6 +191,8 @@
 			if (formClass === 'profile-detail') {
 				isDetailEditMode = !isDetailEditMode;
 			} else if (formClass === 'profile-credential') {
+				let currentPasswordField = document.getElementById("profileCurrentPassword");
+				currentPasswordField.classList.remove('is-invalid');
 				isCredentialEditMode = !isCredentialEditMode;
 			}
 		}
