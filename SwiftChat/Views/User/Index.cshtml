@@ -98,36 +98,6 @@
 
 @section Scripts {
 	<script>
-
-		async function submitProfileCredentials(event) {
-			event.preventDefault();
-			let formData = new FormData(document.getElementById('profileCredentialsForm'));
-			try {
-				let response = await fetch('/User/UpdateProfileCredentials', {
-					method: 'POST',
-					body: formData
-				});
-				if (response.ok) {
-					let result = await response.json();
-					let currentPasswordField = document.getElementById("profileCurrentPassword");
-					if (!result.success) {
-						showError(result.message);
-						currentPasswordField.classList.add('is-invalid');
-						return;
-					}
-					showSuccess(result.message);
-					toggleEditMode('credentialEditCancelButton', 'credentialSaveButton', 'profile-credential', false);
-				} else {
-					const httpError = handleHttpError(response);
-					showError(httpError);
-				}
-			} catch (error) {
-				console.error('Error:', error);
-				showError('An error occurred while updating profile details.');
-			}
-
-		}
-
 		// START Async form submission handling
 
 		async function submitProfileDetails(event) {
@@ -154,6 +124,37 @@
 				console.error('Error:', error);
 				showError('An error occurred while updating profile details.');
 			}
+		}
+
+		async function submitProfileCredentials(event) {
+			event.preventDefault();
+			let formData = new FormData(document.getElementById('profileCredentialsForm'));
+			try {
+				let response = await fetch('/User/UpdateProfileCredentials', {
+					method: 'POST',
+					body: formData
+				});
+				if (response.ok) {
+					let result = await response.json();
+					let currentPasswordField = document.getElementById('profileCurrentPassword');
+					let emailField = document.getElementById('profileEmail');
+					if (!result.success) {
+						showError(result.message);
+						currentPasswordField.classList.add('is-invalid');
+						return;
+					}
+					showSuccess(result.message);
+					emailField.value = result.data.email;
+					toggleEditMode('credentialEditCancelButton', 'credentialSaveButton', 'profile-credential', false);
+				} else {
+					const httpError = handleHttpError(response);
+					showError(httpError);
+				}
+			} catch (error) {
+				console.error('Error:', error);
+				showError('An error occurred while updating profile details.');
+			}
+
 		}
 
 		// END Async form submission handling
@@ -206,6 +207,14 @@
 		function disableFields(fields) {
 			for (let i = 0; i < fields.length; i++) {
 				fields[i].disabled = true;
+				let parentElement = fields[i].closest('.form-group') || fields[i].closest('.form-floating');
+
+				if (parentElement) {
+					let errorMessageElement = parentElement.querySelector('.text-danger');
+					if (errorMessageElement) {
+						errorMessageElement.textContent = '';
+					}
+				}
 			}
 		}
 

@@ -29,6 +29,8 @@ body {
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
+    text-align: center;
+    padding: 1rem; /*overriding default bootstrap for closing box on right padding*/
 }
 
 

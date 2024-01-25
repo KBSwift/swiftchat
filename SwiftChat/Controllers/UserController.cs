@@ -80,7 +80,7 @@ namespace SwiftChat.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new { success = false, message = "Model state is not valid." });
+				return Json(new { success = false, message = "Multiple errors. Check submission and try again." });
 			}
 
 			var user = await _userManager.GetUserAsync(User);
