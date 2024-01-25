@@ -11,23 +11,43 @@
 		</div>
 		<hr />
 
-		<div class="form-floating mb-3">
-			<label>Profile Picture</label>
+		@* <div class="form-floating mb-3">
+		<label>Profile Picture</label>
 
-			@if (Model.ProfilePicture != null)
-			{
-				var base64 = Convert.ToBase64String(Model.ProfilePicture);
-				var imgSrc = String.Format("data:image/png;base64,{0}", base64);
-				<img src="@imgSrc" alt="Profile Picture" title="Lookin' good!" />
-			}
-			else
-			{
-				<img src="~/images/default-profile.png" alt="Default Profile Picture" title="Lookin' default!" />
-			}
+		@if (Model.ProfilePicture != null)
+		{
+		var base64 = Convert.ToBase64String(Model.ProfilePicture);
+		var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+		<img src="@imgSrc" alt="Profile Picture" title="Lookin' good!" />
+		}
+		else
+		{
+		<img src="~/images/default-profile.png" alt="Default Profile Picture" title="Lookin' default!" />
+		}
 
-			<!-- File input for new profile picture - Broken -->
-			@* <label>TEST<input type="file" name="ProfilePictureFile" accept="image/*" /></label> *@
-		</div>
+		<!-- File input for new profile picture - Broken -->
+		@* <label>TEST<input type="file" name="ProfilePictureFile" accept="image/*" /></label>
+		</div> *@
+
+		<form asp-controller="User" asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data" id="profilePictureForm">
+			<div class="form-group">
+				<label for="profilePictureInput" class="form-label">Profile Picture</label>
+
+				@if (Model.ProfilePicture != null)
+				{
+					var base64 = Convert.ToBase64String(Model.ProfilePicture);
+					var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+					<img src="@imgSrc" alt="Profile Picture" title="Lookin' good!" id="profilePicture" />
+				}
+				else
+				{
+					<img src="~/images/default-profile.png" alt="Default Profile Picture" title="Lookin' default!" />
+				}
+
+				<input type="file" class="form-control form-control-lg" id="profilePictureInput"
+					   name="profilePicture" accept="image/*" onchange="submitProfilePictureForm(event)">
+			</div>
+		</form>
 
 		<form asp-controller="User" asp-action="UpdateProfileDetails" method="post" id="profileDetailsForm" onsubmit="submitProfileDetails(event)">
 
@@ -98,6 +118,53 @@
 
 @section Scripts {
 	<script>
+		// START FORM
+
+		async function submitProfilePictureForm(event) {
+			event.preventDefault();
+			let formData = new FormData(document.getElementById('profilePictureForm'));
+			let fileInput = document.getElementById('profilePictureInput');
+
+			if (fileInput.files.length > 0) {
+				try {
+					let response = await fetch('/User/UploadProfilePicture', {
+						method: 'POST',
+						body: formData
+					});
+
+					if (response.ok) {
+						let result = await response.json();
+						if (result.success) {
+							updateProfilePicture(result.data, result.mimeType);
+							showSuccess(result.message);
+						} else {
+							showError(result.message);
+						}
+					} else {
+						const httpError = handleHttpError(response);
+						showError(httpError);
+					}
+				} catch (error) {
+					console.error('Error:', error);
+					showError('An error occurred while updating the profile picture.');
+				}
+			} else {
+				showError('Please select a file to upload.');
+			}
+		}
+
+		function updateProfilePicture(newImageData, mimeType) {
+			// Update the profile picture on the page
+			let imgSrc = `data:${mimeType};base64,${newImageData}`;
+			let profilePicture = document.getElementById('profilePicture');
+			if (profilePicture) {
+				profilePicture.src = imgSrc;
+			}
+		}
+
+		// END FORM
+
+
 		// START Async form submission handling
 
 		let originalData = {};
@@ -112,9 +179,9 @@
 					method: 'POST',
 					body: formData
 				});
-				for (let [key, value] of formData.entries()) {
-					console.log(key, value);
-				}
+				// for (let [key, value] of formData.entries()) {
+				// 	console.log(key, value);
+				// }
 				if (response.ok) {
 					let result = await response.json();
 					saveOriginalData('profile-detail');
@@ -165,7 +232,7 @@
 
 		// START logic for edit to cancel button
 
-		
+
 
 		document.addEventListener('DOMContentLoaded', function () {
 			saveOriginalData('profile-detail');
@@ -235,7 +302,7 @@
 			}
 		}
 
-		// END logic for edit to cancel button		
+		// END logic for edit to cancel button
 
 		function toggleConfirmPasswordField() {
 			let newPassword = document.getElementById('profileNewPassword').value;

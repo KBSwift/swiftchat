@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using SwiftChat.Models.Dtos;
 using SwiftChat.Models.Entities;
+using SixLabors.ImageSharp;
 
 namespace SwiftChat.Controllers
 {
 	public class UserController : Controller
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
+		private const long MaxFileSize = 10485760; // 10 MB
 
 		public UserController(UserManager<ApplicationUser> userManager)
 		{
@@ -138,7 +140,72 @@ namespace SwiftChat.Controllers
 			return Json(new { success = true, message = "Credentials updated successfully.", data = new { user.Email, user.UserName } });
 		}
 
+		[HttpPost]
+		public async Task<IActionResult> UploadProfilePicture(IFormFile profilePicture)
+		{
+			if (profilePicture == null || profilePicture.Length == 0)
+			{
+				return Json(new { success = false, message = "No file selected." });
+			}
 
+			if (profilePicture.Length > MaxFileSize)
+			{
+				return Json(new { success = false, message = $"Max filesize allowed is {MaxFileSize / 1024} MB." });
+			}
 
+			var user = await _userManager.GetUserAsync(User);
+			if (user == null)
+			{
+				return NotFound("User not found.");
+			}
+
+			using (var memoryStream = new MemoryStream())
+			{
+				await profilePicture.CopyToAsync(memoryStream);
+
+				// Check if the file is an image (optional)
+				if (!IsImage(memoryStream))
+				{
+					return Json(new { success = false, message = "Invalid file format. Please upload an image." });
+				}
+
+				user.ProfilePicture = memoryStream.ToArray();
+			}
+
+			var result = await _userManager.UpdateAsync(user);
+			if (result.Succeeded)
+			{
+				string base64Image = Convert.ToBase64String(user.ProfilePicture);
+				return Json(new
+				{
+					success = true,
+					message = "Profile picture updated successfully.",
+					data = base64Image,
+					mimeType = profilePicture.ContentType
+				});
+			}
+			else
+			{
+				return Json(new { success = false, message = "Error updating profile picture." });
+			}
+		}
+
+		private bool IsImage(Stream stream)
+		{
+			try
+			{
+				stream.Position = 0;
+				using var image = Image.Load(stream);
+				return image.Width > 0 && image.Height > 0;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 	}
+
+
+
 }
+
