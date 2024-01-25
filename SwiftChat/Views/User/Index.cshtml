@@ -100,6 +100,10 @@
 	<script>
 		// START Async form submission handling
 
+		let originalData = {};
+		let isDetailEditMode = false;
+		let isCredentialEditMode = false;
+
 		async function submitProfileDetails(event) {
 			event.preventDefault();
 			let formData = new FormData(document.getElementById('profileDetailsForm'));
@@ -144,9 +148,8 @@
 						return;
 					}
 					showSuccess(result.message);
-					emailField.value = result.data.email;
-					saveOriginalData('profile-credential');
 					toggleEditMode('credentialEditCancelButton', 'credentialSaveButton', 'profile-credential', false);
+					emailField.value = result.data.email;
 				} else {
 					const httpError = handleHttpError(response);
 					showError(httpError);
@@ -162,9 +165,7 @@
 
 		// START logic for edit to cancel button
 
-		let originalData = {};
-		let isDetailEditMode = false;
-		let isCredentialEditMode = false;
+		
 
 		document.addEventListener('DOMContentLoaded', function () {
 			saveOriginalData('profile-detail');
