@@ -145,6 +145,7 @@
 					}
 					showSuccess(result.message);
 					emailField.value = result.data.email;
+					saveOriginalData('profile-credential');
 					toggleEditMode('credentialEditCancelButton', 'credentialSaveButton', 'profile-credential', false);
 				} else {
 					const httpError = handleHttpError(response);
