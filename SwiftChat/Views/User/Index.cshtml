@@ -30,22 +30,26 @@
 		</div> *@
 
 		<form asp-controller="User" asp-action="UploadProfilePicture" method="post" enctype="multipart/form-data" id="profilePictureForm">
-			<div class="form-group">
-				<label for="profilePictureInput" class="form-label">Profile Picture</label>
+			<div>
 
-				@if (Model.ProfilePicture != null)
-				{
-					var base64 = Convert.ToBase64String(Model.ProfilePicture);
-					var imgSrc = String.Format("data:image/png;base64,{0}", base64);
-					<img src="@imgSrc" alt="Profile Picture" title="Lookin' good!" id="profilePicture" />
-				}
-				else
-				{
-					<img src="~/images/default-profile.png" alt="Default Profile Picture" title="Lookin' default!" />
-				}
+				<div>
+					<label for="profilePictureInput" class="form-label">
+						@if (Model.ProfilePicture != null)
+						{
+							var base64 = Convert.ToBase64String(Model.ProfilePicture);
+							var imgSrc = String.Format("data:image/png;base64,{0}", base64);
+							<img src="@imgSrc" alt="Profile Picture" title="Lookin' good!" id="profilePicture" />
+						}
+						else
+						{
+							<img src="~/images/default-profile.png" alt="Default Profile Picture" title="Lookin' default!" />
+						}
+					</label>
+				</div>
 
 				<input type="file" class="form-control form-control-lg" id="profilePictureInput"
-					   name="profilePicture" accept="image/*" onchange="submitProfilePictureForm(event)">
+					   name="profilePicture" accept="image/*" onchange="submitProfilePictureForm(event)" hidden>
+				<label for="profilePictureInput" class="btn btn-primary btn-lg">Update Profile Picture</label>
 			</div>
 		</form>
 
@@ -118,7 +122,7 @@
 
 @section Scripts {
 	<script>
-		// START FORM
+		// START PICTURE FORM
 
 		async function submitProfilePictureForm(event) {
 			event.preventDefault();
@@ -149,12 +153,12 @@
 					showError('An error occurred while updating the profile picture.');
 				}
 			} else {
-				showError('Please select a file to upload.');
+				showError('No changes made to profile picture');
 			}
 		}
 
 		function updateProfilePicture(newImageData, mimeType) {
-			// Update the profile picture on the page
+			// Using mimeType to dynamically update img types
 			let imgSrc = `data:${mimeType};base64,${newImageData}`;
 			let profilePicture = document.getElementById('profilePicture');
 			if (profilePicture) {
@@ -162,7 +166,7 @@
 			}
 		}
 
-		// END FORM
+		// END PICTURE FORM
 
 
 		// START Async form submission handling

@@ -61,12 +61,10 @@ namespace SwiftChat.Controllers
 			var result = await _userManager.UpdateAsync(user);
 			if (result.Succeeded)
 			{
-				// Create a response object with updated details from the user object
 				var updatedProfile = new
 				{
 					Bio = user.Bio,
 					DateOfBirth = user.DateOfBirth.HasValue ? user.DateOfBirth.Value.ToString("yyyy-MM-dd") : null
-					// Add other fields from the user object as needed
 				};
 
 				return Json(new { success = true, message = "Details updated successfully.", data = updatedProfile });
@@ -136,9 +134,25 @@ namespace SwiftChat.Controllers
 				return Json(new { success = false, message = "Error updating profile." });
 			}
 
-			// Optionally, you can return updated user data here
 			return Json(new { success = true, message = "Credentials updated successfully.", data = new { user.Email, user.UserName } });
 		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetProfilePicture()
+		{
+			var user = await _userManager.GetUserAsync(User);
+			if (user == null || user.ProfilePicture == null)
+			{
+				// Return a default image
+				var defaultImagePath = "~/images/default-profile.png"; // Adjust the path as needed
+				var defaultImage = await System.IO.File.ReadAllBytesAsync(defaultImagePath);
+				return File(defaultImage, "image/jpeg"); // Adjust the MIME type for your default image
+			}
+
+
+			return File(user.ProfilePicture, "image/png"); // Adjust the MIME type accordingly
+		}
+
 
 		[HttpPost]
 		public async Task<IActionResult> UploadProfilePicture(IFormFile profilePicture)
@@ -163,7 +177,6 @@ namespace SwiftChat.Controllers
 			{
 				await profilePicture.CopyToAsync(memoryStream);
 
-				// Check if the file is an image (optional)
 				if (!IsImage(memoryStream))
 				{
 					return Json(new { success = false, message = "Invalid file format. Please upload an image." });

@@ -33,6 +33,20 @@ body {
     padding: 1rem; /*overriding default bootstrap for closing box on right padding*/
 }
 
+.dynamic-profile-picture {
+    width: 2.5rem; /* Adjust the size as needed */
+    height: 2.5rem; /* Adjust the size as needed */
+    border-radius: 50%; /* Circular image */
+    object-fit: cover; /* Ensures the image covers the area without stretching */
+    border: 2px solid #fff; /* Optional: Adds a border around the image */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+}
+
+    .dynamic-profile-picture:hover {
+        opacity: 0.8; /* Example: Slightly fade the image on hover */
+        cursor: pointer; /* Changes the cursor to indicate it's clickable */
+    }
+
 
 #messageInput {
     min-height: 20px;

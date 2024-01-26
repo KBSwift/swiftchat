@@ -21,7 +21,7 @@
 				</button>
 
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-					<ul class="navbar-nav flex-grow-1">
+					<ul class="navbar-nav flex-grow-1 align-items-center">
 						<!-- Single Home link for both authenticated and unauthenticated users. Using logo for home button. Deprecating Home below -->
 						@* <li class="nav-item">
 						<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -30,10 +30,6 @@
 						<!-- Conditional navbar links based on authentication status -->
 						@if (User?.Identity?.IsAuthenticated == true)
 						{
-							<!-- When user is logged in -->
-							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="user" asp-action="Index">@User.Identity.Name</a>
-							</li>
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="chat" asp-action="Index">Join Chat</a>
 							</li>
@@ -42,6 +38,18 @@
 									<button type="submit" class="nav-link btn btn-link text-dark" style="background-color:transparent; border:none;">Logout</button>
 								</form>
 							</li>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+							</li>
+							<!-- When user is logged in -->
+							<li class="navbar-brand ms-auto">
+								<a class="nav-link text-dark" asp-area="" asp-controller="user" asp-action="Index">
+									@await Html.PartialAsync("_UserProfilePartial", new UserProfilePictureViewModel{
+										ProfilePictureUrl = Url.Action("GetProfilePicture", "User"),
+										Username = User.Identity.Name
+									})
+									@User.Identity.Name</a>
+							</li>
 						}
 						else
 						{
@@ -49,11 +57,12 @@
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
 							</li>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+							</li>
 						}
 
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-						</li>
+						
 					</ul>
 				</div>
 			</div>
