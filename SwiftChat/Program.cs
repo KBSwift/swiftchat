@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SwiftChat.Data;
 using SwiftChat.Hubs; // Access ChatHub from SwiftChat.Hubs namespace
-using SwiftChat.Models.Entities; // Need this since extending Identity
+using SwiftChat.Interfaces;
+using SwiftChat.Models.Entities;
+using SwiftChat.Services; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Adds MVC controllers with views
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<IEmailService, GmailEmailService>();
 
 // Configure Entity Framework Core to use MySQL database
 // Original implementation before using ENV VARIABLES for safety to upload publicly
