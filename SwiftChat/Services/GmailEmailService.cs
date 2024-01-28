@@ -31,12 +31,12 @@ namespace SwiftChat.Services
 			string? senderEmail = Environment.GetEnvironmentVariable("SWIFTCHAT_SENDER_EMAIL"); // Nullable
 			if (string.IsNullOrEmpty(senderEmail))
 			{
-				throw new InvalidOperationException("Sender email should be in ENV VAR or hardcoded");
+				throw new InvalidOperationException("Sender email missing. Should be in ENV VAR or hardcoded");
 			}
 
 			// Using MimeKit to preserve format
 			var email = new MimeMessage();
-			email.From.Add(MailboxAddress.Parse("your-email@gmail.com"));
+			email.From.Add(MailboxAddress.Parse(senderEmail));
 			email.To.Add(MailboxAddress.Parse(to));
 			email.Subject = subject;
 
@@ -44,7 +44,7 @@ namespace SwiftChat.Services
 			var builder = new BodyBuilder { HtmlBody = messageBody };
 			email.Body = builder.ToMessageBody();
 
-			// Now to convert MimeMessage to a byte array
+			// COnverting MimeMessage to a byte array
 			byte[] messageBytes;
 			using (var memoryStream = new MemoryStream())
 			{
@@ -52,7 +52,7 @@ namespace SwiftChat.Services
 				messageBytes = memoryStream.ToArray();
 			}
 
-			// Convert byte array to a base64url string
+			// Converting byte array to a base64url string per API docs
 			var base64EncodedEmail = Convert.ToBase64String(messageBytes)
 				.Replace('+', '-')
 				.Replace('/', '_')

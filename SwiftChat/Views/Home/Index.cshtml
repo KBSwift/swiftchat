@@ -5,6 +5,23 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <button id="sendEmailButton" class="btn btn-primary">Send Test Email</button> @* STRICTLY TESTING EMAIL API *@
 </div>
 
 
+
+@section Scripts {
+    <script>
+        document.getElementById('sendEmailButton').addEventListener('click', function () {
+            fetch('/GmailTest/SendTestEmail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.text())
+                .then(text => alert(text))
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+}

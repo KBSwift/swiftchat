@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using SwiftChat.Data;
 using SwiftChat.Hubs; // Access ChatHub from SwiftChat.Hubs namespace
 using SwiftChat.Interfaces;
+using SwiftChat.Models.Configurations;
 using SwiftChat.Models.Entities;
 using SwiftChat.Services; 
 
@@ -15,7 +16,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Adds MVC controllers with views
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IEmailService, GmailEmailService>();
+
+// Configure GmailEmailSettings
+var gmailSettings = builder.Configuration.GetSection("GmailEmailSettings").Get<GmailEmailSettings>();
+if (gmailSettings == null)
+{
+	throw new InvalidOperationException("Gmail settings could not be loaded.");
+}
+
+builder.Services.AddSingleton(gmailSettings);
+
+// Register GmailEmailService
+builder.Services.AddScoped<IEmailService, GmailEmailService>();
+
+// Initialize and register GmailService
+var gmailService = await GmailServiceHelper.GetGmailServiceAsync(gmailSettings);
+builder.Services.AddSingleton(gmailService);
 
 // Configure Entity Framework Core to use MySQL database
 // Original implementation before using ENV VARIABLES for safety to upload publicly
