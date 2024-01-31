@@ -4,14 +4,39 @@
         const input = document.getElementById(inputId);
         const pickerOptions = {
             onEmojiSelect: emoji => {
-
-                input.value += emoji.native;
+                if (input.getAttribute("is-data-placeholder") === "true") {
+                    input.innerHTML = "";
+                    input.setAttribute("is-data-placeholder", "false");
+                }
+                insertEmojiAtCursor(input, emoji.native);
                 input.focus();
-                hidePicker(); // Hidin picker after selecting an emoji. Might change later
+                hidePicker(); // Hiding picker after selecting an emoji. Might change later
             },
-            set: "google"
+            set: "native"
         };
         const picker = new EmojiMart.Picker(pickerOptions);
+
+        function insertEmojiAtCursor(element, emoji) {
+            const sel = window.getSelection();
+            if (element.getAttribute("is-data-placeholder") === "false") {
+                const range = sel.getRangeAt(0);
+                range.deleteContents();
+                const emojiNode = document.createTextNode(emoji);
+                range.insertNode(emojiNode);
+
+                // Move the caret immediately after the inserted emoji
+                range.setStartAfter(emojiNode);
+                range.setEndAfter(emojiNode);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else if (element.textContent) {
+                // Fallback: append the emoji at the end if there's no selection
+                element.textContent += emoji;
+            } else {
+                // If the content is empty, just add the emoji
+                element.textContent = emoji;
+            }
+        }
 
         // Trying to keep picker near button
         function positionPicker() {

@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Adds MVC controllers with views
 builder.Services.AddControllersWithViews();
 
-// Configure GmailEmailSettings
+// Gmail Configurations
 var gmailSettings = builder.Configuration.GetSection("GmailEmailSettings").Get<GmailEmailSettings>();
 if (gmailSettings == null)
 {
@@ -26,10 +26,8 @@ if (gmailSettings == null)
 
 builder.Services.AddSingleton(gmailSettings);
 
-// Register GmailEmailService
 builder.Services.AddScoped<IEmailService, GmailEmailService>();
 
-// Initialize and register GmailService
 var gmailService = await GmailServiceHelper.GetGmailServiceAsync(gmailSettings);
 builder.Services.AddSingleton(gmailService);
 

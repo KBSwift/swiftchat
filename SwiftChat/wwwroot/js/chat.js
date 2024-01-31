@@ -1,4 +1,5 @@
 ﻿let connection;
+const placeholderText = "What I want to say is ....";
 
 function initializeChatSignalR() {
     // Create a connection to the SignalR hub
@@ -39,7 +40,6 @@ function initializeChatSignalR() {
 function sendMessage() {
     let messageInput = document.getElementById("messageInput");
     let message = messageInput.textContent.trim();
-    const placeholderText = "What I want to say is ....";
     const isError = messageInput.getAttribute("data-is-error") === "true";
 
     if ((message === "" || message === placeholderText) && !isError) {
@@ -58,49 +58,53 @@ function sendMessage() {
 
 document.getElementById("messageInput").addEventListener("focus", function () {
     let messageInput = document.getElementById("messageInput");
-    if (messageInput.getAttribute('data-is-error') === 'true') {
-        messageInput.textContent = '';
+    if (messageInput.getAttribute("data-is-error") === "true") {
+        messageInput.textContent = "";
         messageInput.classList.remove("error");
-        messageInput.setAttribute('data-is-error', 'false');
+        messageInput.setAttribute("data-is-error", "false");
+        messageInput.setAttribute("is-data-placeholder", "false");
     }
 });
 
 document.getElementById("messageInput").addEventListener("input", function () {
     let messageInput = document.getElementById("messageInput");
-    if (messageInput.getAttribute('data-is-error') === 'true') {
-        messageInput.textContent = '';
+    if (messageInput.getAttribute("data-is-error") === "true") {
+        messageInput.textContent = "";
         messageInput.classList.remove("error");
-        messageInput.setAttribute('data-is-error', 'false');
+        messageInput.setAttribute("data-is-error", "false");
+        messageInput.setAttribute("is-data-placeholder", "false");
     }
 });
 
 
 // ChatHub input field behavior handling
-document.addEventListener("DOMContentLoaded", function () {
-    const messageInput = document.getElementById("messageInput");
-    const placeholderText = "What I want to say is ....";
 
-    function updatePlaceholder() {
-        if (messageInput.textContent.trim() === "") {
-            messageInput.innerHTML = placeholderText;
-            messageInput.classList.add("message-placeholder");
-        } else {
-            messageInput.classList.remove("message-placeholder");
-        }
+const messageInput = document.getElementById("messageInput");
+
+function updatePlaceholder() {
+    if (messageInput.textContent.trim() === "") {
+        messageInput.innerHTML = placeholderText;
+        messageInput.classList.add("message-placeholder");
+        messageInput.setAttribute("is-data-placeholder", "true");
+    } else {
+        messageInput.classList.remove("message-placeholder");
+        messageInput.setAttribute("is-data-placeholder", "false");
     }
+}
 
+updatePlaceholder();
+
+// When focusing on text
+messageInput.addEventListener("focus", function () {
     updatePlaceholder();
-
-    // When focusing on text
-    messageInput.addEventListener("focus", function () {
-        if (messageInput.textContent.trim() === placeholderText) {
-            messageInput.textContent = "";
-            messageInput.classList.remove("message-placeholder");
-        }
-    });
-
-    // Blur event
-    messageInput.addEventListener("blur", updatePlaceholder);
+    if (messageInput.textContent.trim() === placeholderText) {
+        messageInput.textContent = "";
+        messageInput.classList.remove("message-placeholder");
+    }
 });
+
+// Blur event
+messageInput.addEventListener("blur", updatePlaceholder);
+
 
 
