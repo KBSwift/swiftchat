@@ -6,7 +6,7 @@ namespace SwiftChat.Models.Entities
     {
         public int Id { get; set; }
         public string? SenderId { get; set; } // Foreign key linking to ApplicationUser
-        public string Message { get; set; } = string.Empty; // Avoiding null values
+        public string Message { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; }
 
         // Navigation to ApplicationUser for easy referencing later!

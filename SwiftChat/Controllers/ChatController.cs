@@ -14,17 +14,16 @@ namespace SwiftChat.Controllers
             _userManager = userManager;
         }
 
-        // GET: Chat/Index
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                // Redirect to login page or handle the case where the user is not logged in
+                // Redirect to login page in case user is not logged in and attempts to access
                 return RedirectToAction("Login", "Account");
             }
 
-            // Pass the user's information to the view
+            // Pass user's information to chat view
             return View(user);
         }
     }

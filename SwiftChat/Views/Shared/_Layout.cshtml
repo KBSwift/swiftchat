@@ -34,14 +34,13 @@
 								<a class="nav-link text-dark" asp-area="" asp-controller="chat" asp-action="Index">Join Chat</a>
 							</li>
 							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
+							</li>
+							<li class="nav-item">
 								<form method="post" asp-area="Identity" asp-page="/Account/Logout" class="form-inline">
 									<button type="submit" class="nav-link btn btn-link text-dark" style="background-color:transparent; border:none;">Logout</button>
 								</form>
 							</li>
-							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-							</li>
-							<!-- When user is logged in -->
 							<li class="navbar-brand ms-auto">
 								<a class="nav-link text-dark" asp-area="" asp-controller="user" asp-action="Index">
 									@await Html.PartialAsync("_UserProfilePartial", new UserProfilePictureViewModel{
@@ -58,7 +57,7 @@
 								<a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
 							</li>
 						}
 
@@ -67,7 +66,7 @@
 				</div>
 			</div>
 		</nav>
-		<div id="alertPlaceholder"></div> @* FIXME: will make dynamic and relative to vp *@
+		<div id="alertPlaceholder"></div> @* FIXME: will make dynamic and relative to viewport *@
 	</header>
 
 	<div class="container">

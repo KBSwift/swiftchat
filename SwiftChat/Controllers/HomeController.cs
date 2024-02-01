@@ -77,7 +77,8 @@ namespace SwiftChat.Controllers
             return View();
         }*/
 
-        public IActionResult Privacy()
+        [Route("/about")]
+        public IActionResult About()
         {
             return View();
         }

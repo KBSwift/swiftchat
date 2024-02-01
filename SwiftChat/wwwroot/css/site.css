@@ -34,12 +34,12 @@ body {
 }
 
 .dynamic-profile-picture {
-    width: 2.5rem; /* Adjust the size as needed */
-    height: 2.5rem; /* Adjust the size as needed */
-    border-radius: 50%; /* Circular image */
-    object-fit: cover; /* Ensures the image covers the area without stretching */
-    border: 2px solid #fff; /* Optional: Adds a border around the image */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+    width: 2.5rem; 
+    height: 2.5rem; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 2px solid #fff; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
     .dynamic-profile-picture:hover {

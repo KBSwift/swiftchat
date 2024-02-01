@@ -144,13 +144,13 @@ namespace SwiftChat.Controllers
 			if (user == null || user.ProfilePicture == null)
 			{
 				// Return a default image
-				var defaultImagePath = "path/to/default/image.jpg"; // Adjust the path as needed
+				var defaultImagePath = "wwwroot/images/default-profile.png"; 
 				var defaultImage = await System.IO.File.ReadAllBytesAsync(defaultImagePath);
-				return File(defaultImage, "image/jpeg"); // Adjust the MIME type for your default image
+				return File(defaultImage, "image/png");
 			}
 
 
-			return File(user.ProfilePicture, "image/png"); // Adjust the MIME type accordingly
+			return File(user.ProfilePicture, "image/png"); // Adjusting MIME type. Using default letting browser render for now
 		}
 
 

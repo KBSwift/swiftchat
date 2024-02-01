@@ -52,7 +52,7 @@ function sendMessage() {
             return console.error(err.toString());
         });
         messageInput.textContent = "";
-        messageInput.setAttribute('data-is-error', 'false');
+        messageInput.setAttribute("data-is-error", "false");
     }
 }
 
