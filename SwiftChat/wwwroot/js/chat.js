@@ -16,11 +16,36 @@ function initializeChatSignalR() {
     document.getElementById("sendButton").disabled = true;
 
     // Handling incoming messages
-    connection.on("ReceiveMessage", function (username, message) {
-        let msg = document.createElement("div");
-        msg.textContent = `${username}: ${message}`;
-        document.getElementById("messageArea").appendChild(msg);
+    connection.on("ReceiveMessage", function (username, message, messageId, upvotes, downvotes, saveCount) {
+        let msgContainer = document.createElement("div");
+        msgContainer.classList.add("message-container");
+        msgContainer.setAttribute('data-message-id', messageId); // Set the message ID as a data attribute
+        msgContainer.innerHTML = `
+        <span>${username}: ${message}</span>
+        <span class="message-buttons">
+            <button class="vote-button btn btn-outline-success btn-sm" data-message-id="${messageId}">
+                <span style="line-height: 1;">
+                    ${upvotes}<i class="bi bi-arrow-up"></i>
+                </span>
+                <span style="line-height: 1;">Like</span>
+            </button>
+
+            <button class="vote-button btn btn-outline-danger btn-sm" data-message-id="${messageId}">
+                <span style="line-height: 1;">
+                    ${downvotes}<i class="bi bi-arrow-down"></i>
+                </span>
+                <span style="line-height: 1;">Dislike</span>
+            </button>
+        
+            <button class="save-button btn btn-outline-primary btn-sm" data-message-id="${messageId}">
+                <i class="bi bi-bookmark"></i> Save
+            </button>
+        </span>`;
+        document.getElementById("messageArea").appendChild(msgContainer);
     });
+
+
+
 
     // Send button actions and clicking
     document.getElementById("sendButton").addEventListener("click", function (event) {
@@ -35,7 +60,24 @@ function initializeChatSignalR() {
             sendMessage();
         }
     });
+
+    connection.on("ReceiveMessageUpdate", function (messageId, upvotes, downvotes, saveCount) {
+        // Find the message in the message area using messageId
+        // Update the displayed upvote, downvote, and save counts
+        const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+        if (messageElement) {
+            const upvoteElement = messageElement.querySelector('.upvote-count');
+            const downvoteElement = messageElement.querySelector('.downvote-count');
+            const saveCountElement = messageElement.querySelector('.save-count');
+
+            if (upvoteElement) upvoteElement.textContent = upvotes;
+            if (downvoteElement) downvoteElement.textContent = downvotes;
+            if (saveCountElement) saveCountElement.textContent = saveCount;
+        }
+    });
 }
+
+
 
 function sendMessage() {
     let messageInput = document.getElementById("messageInput");
@@ -80,6 +122,11 @@ document.getElementById("messageInput").addEventListener("input", function () {
 // ChatHub input field behavior handling
 
 const messageInput = document.getElementById("messageInput");
+const messageArea = document.getElementById("messageArea");
+
+messageArea.addEventListener("onhover", function () {
+
+});
 
 function updatePlaceholder() {
     if (messageInput.textContent.trim() === "") {

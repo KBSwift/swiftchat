@@ -12,6 +12,8 @@ namespace SwiftChat.Models.Entities
 
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
-    }
+		public ICollection<ChatMessage> SavedMessages { get; set; } = new List<ChatMessage>();
+		public ICollection<ChatMessage> SentMessages { get; set; } = new List<ChatMessage>();
+	}
 
 }

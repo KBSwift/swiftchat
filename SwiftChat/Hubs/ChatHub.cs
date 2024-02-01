@@ -40,8 +40,14 @@ namespace SwiftChat.Hubs
             await _context.SaveChangesAsync();
 
             // Broadcast the message to all clients
-            await Clients.All.SendAsync("ReceiveMessage", user.UserName, message);
+            await Clients.All.SendAsync("ReceiveMessage", user.UserName, message, chatMessage.Id, chatMessage.Upvotes, chatMessage.Downvotes, chatMessage.SavedByUsers.Count);
+
         }
 
-    }
+		public async Task BroadcastMessageUpdate(int messageId, int upvotes, int downvotes, int saveCount)
+		{
+			await Clients.All.SendAsync("ReceiveMessageUpdate", messageId, upvotes, downvotes, saveCount);
+		}
+
+	}
 }
